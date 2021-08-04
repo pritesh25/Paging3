@@ -6,11 +6,13 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.mindorks.example.paging3.data.APIService
-import com.mindorks.example.paging3.data.datasource.PostDataSource
+import com.mindorks.example.paging3.data.APIService.Companion.PAGE_SIZE
+import com.mindorks.example.paging3.data.datasource.StackDataSource
 
 class MainViewModel(private val apiService: APIService) : ViewModel() {
 
-    val listData = Pager(PagingConfig(pageSize = 6)) {
-        PostDataSource(apiService)
+    val stackListData = Pager(PagingConfig(pageSize = PAGE_SIZE)) {
+        StackDataSource(apiService)
     }.flow.cachedIn(viewModelScope)
+
 }

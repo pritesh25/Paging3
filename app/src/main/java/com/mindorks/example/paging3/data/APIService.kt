@@ -1,29 +1,45 @@
 package com.mindorks.example.paging3.data
 
-import com.mindorks.example.paging3.data.response.ApiResponse
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.mindorks.example.paging3.data.response.StackResponse
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface APIService {
 
-    @GET("api/users")
-    suspend fun getListData(@Query("page") pageNumber: Int): Response<ApiResponse>
+    @GET("2.3/questions")
+    suspend fun getStackListData(
+        @Query("page") page: Int,
+        @Query("pagesize") pagesize: Int,
+        @Query("order") order: String = "desc",
+        @Query("sort") sort: String = "activity",
+        @Query("site") site: String = "stackoverflow",
+    ): Response<StackResponse>
 
     companion object {
 
-        private val moshi = Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
-            .build()
+        const val PAGE_SIZE = 10
 
-        fun getApiService() = Retrofit.Builder()
-            .baseUrl("https://reqres.in/")
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-            .create(APIService::class.java)
+        fun getStackApiService(): APIService {
+
+            val logger = HttpLoggingInterceptor()
+            logger.level = HttpLoggingInterceptor.Level.BASIC
+
+            val client = OkHttpClient.Builder()
+                .addInterceptor(logger)
+                .build()
+
+            return Retrofit.Builder()
+                .baseUrl("https://api.stackexchange.com/")
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(APIService::class.java)
+        }
+
     }
 }
