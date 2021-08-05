@@ -3,16 +3,21 @@ package com.mindorks.example.paging3
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.mindorks.example.paging.R
 import com.mindorks.example.paging.databinding.ActivityMainBinding
 import com.mindorks.example.paging3.adapter.MovieLoadStateAdapter
 import com.mindorks.example.paging3.adapter.StackListAdapter
 import com.mindorks.example.paging3.data.APIService
+import com.mindorks.example.paging3.data.APIService.Companion.ORDER_TYPE
+import com.mindorks.example.paging3.data.APIService.Companion.SORT_TYPE
 import com.mindorks.example.paging3.events.StackEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -40,12 +45,73 @@ class MainActivity : AppCompatActivity() {
         setupViewModel()
 
         //stack list
+        setupStackSpinner()
         setupStackList()
         setupStackView()
 
         //main list
         //setupList()
         //setupView()
+    }
+
+    private var isOrderClicked = false
+    private var isSortClicked = false
+    private fun setupStackSpinner() {
+        val orderList = resources.getStringArray(R.array.order_list) //arrayOf("desc", "asc")
+        val sortList = resources.getStringArray(R.array.sort_list) //arrayOf("activity", "votes", "creation", "hot", "week", "month")
+
+        val adapterOrder = ArrayAdapter.createFromResource(this, R.array.order_list, R.layout.item_spinner)
+        binding.spinnerOrder.adapter = adapterOrder//ArrayAdapter(this, android.R.layout.simple_spinner_item, orderList)
+        binding.spinnerOrder.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+
+                if (isOrderClicked) {
+                    Log.d(mTag, "order : itemSelected = ${orderList[position]}")
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.tvOrder.text = orderList[position]
+                    ORDER_TYPE = orderList[position]
+                    stackListAdapter.refresh()
+                    isOrderClicked = false
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+        }
+
+        binding.tvOrder.setOnClickListener {
+            isOrderClicked = true
+            binding.spinnerOrder.performClick()
+        }
+
+        val adapterSort = ArrayAdapter.createFromResource(this, R.array.sort_list, R.layout.item_spinner)
+        binding.spinnerSort.adapter = adapterSort//ArrayAdapter(this, android.R.layout.simple_spinner_item, sortList)
+        binding.spinnerSort.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+
+                if (isSortClicked) {
+                    Log.d(mTag, "sort : itemSelected = ${sortList[position]}")
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.tvSort.text = sortList[position]
+                    SORT_TYPE = sortList[position]
+                    stackListAdapter.refresh()
+                    isSortClicked = false
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+        }
+
+        binding.tvSort.setOnClickListener {
+            isSortClicked = true
+            binding.spinnerSort.performClick()
+        }
+
     }
 
     private fun setupViewModel() {
@@ -154,6 +220,5 @@ class MainActivity : AppCompatActivity() {
         binding.tvError.visibility = View.VISIBLE
         binding.tvError.text = stackEvent.message
     }
-
 
 }

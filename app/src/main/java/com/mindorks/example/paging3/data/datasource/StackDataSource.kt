@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.mindorks.example.paging3.data.APIService
+import com.mindorks.example.paging3.data.APIService.Companion.ORDER_TYPE
 import com.mindorks.example.paging3.data.APIService.Companion.PAGE_SIZE
+import com.mindorks.example.paging3.data.APIService.Companion.SORT_TYPE
 import com.mindorks.example.paging3.data.response.StackResponse
 import com.mindorks.example.paging3.events.StackEvent
 import org.greenrobot.eventbus.EventBus
@@ -17,7 +19,7 @@ class StackDataSource(private val apiService: APIService) : PagingSource<Int, St
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, StackResponse.Item> {
         try {
             val currentLoadingPageKey = params.key ?: 1
-            val response = apiService.getStackListData(currentLoadingPageKey, PAGE_SIZE)
+            val response = apiService.getStackListData(currentLoadingPageKey, PAGE_SIZE, ORDER_TYPE, SORT_TYPE)
             val data = response.body()?.items ?: emptyList()
 
             responseData.addAll(data)

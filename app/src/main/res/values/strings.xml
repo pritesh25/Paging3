@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Paging3</string>
+
+    <string-array name="order_list">
+        <item>desc</item>
+        <item>asc</item>
+    </string-array>
+
+    <string-array name="sort_list">
+        <item>activity</item>
+        <item>votes</item>
+        <item>creation</item>
+        <item>hot</item>
+        <item>week</item>
+        <item>month</item>
+    </string-array>
+
 </resources>

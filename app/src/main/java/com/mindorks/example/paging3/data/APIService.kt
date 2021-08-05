@@ -22,6 +22,8 @@ interface APIService {
 
     companion object {
 
+        var ORDER_TYPE = "desc"
+        var SORT_TYPE = "activity"
         const val PAGE_SIZE = 10
 
         fun getStackApiService(): APIService {
